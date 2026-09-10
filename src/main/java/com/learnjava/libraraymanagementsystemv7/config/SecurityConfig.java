@@ -47,7 +47,11 @@ public class SecurityConfig
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/librarian-invitations").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/librarian-invitations").hasRole("ADMIN")
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/librarian-invitations/accept"
+                        ).permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/books")
                         .hasRole("LIBRARIAN")

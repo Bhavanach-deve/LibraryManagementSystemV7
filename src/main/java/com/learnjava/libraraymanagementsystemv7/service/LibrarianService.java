@@ -18,16 +18,7 @@ public class LibrarianService
     public LibrarianService(LibrarianRepository librarianRepository) {
         this.librarianRepository = librarianRepository;
     }
-    public LibrarianResponse addLibrarian(LibrarianRequest librarianRequest) {
-
-        Librarian librarian = new Librarian();
-
-        librarian.setName(librarianRequest.getName());
-        librarian.setEmail(librarianRequest.getEmail());
-
-        Librarian savedLibrarian = librarianRepository.save(librarian);
-        return toLibrarianResponse(savedLibrarian);
-    }
+  
     public List<LibrarianResponse> getAllLibrarians() {
 
         List<Librarian> librarians = librarianRepository.findAll();
@@ -54,7 +45,6 @@ public class LibrarianService
         Librarian librarian = findLibrarianById(id);
 
         librarian.setName(librarianRequest.getName());
-        librarian.setEmail(librarianRequest.getEmail());
 
         Librarian updatedLibrarian =
                 librarianRepository.save(librarian);

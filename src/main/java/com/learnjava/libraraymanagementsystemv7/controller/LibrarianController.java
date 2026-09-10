@@ -20,17 +20,6 @@ public class LibrarianController {
         this.librarianService = librarianService;
     }
 
-    @PostMapping
-    public ResponseEntity<LibrarianResponse> addLibrarian(
-            @Valid @RequestBody LibrarianRequest librarianRequest) {
-
-        LibrarianResponse response =
-                librarianService.addLibrarian(librarianRequest);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
-    }
     @GetMapping
     public ResponseEntity<List<LibrarianResponse>> getAllLibrarians() {
 

@@ -1,8 +1,10 @@
 package com.learnjava.libraraymanagementsystemv7.controller;
 
+import com.learnjava.libraraymanagementsystemv7.dto.AcceptLibrarianInvitationRequest;
 import com.learnjava.libraraymanagementsystemv7.dto.LibrarianInvitationRequest;
 import com.learnjava.libraraymanagementsystemv7.dto.LibrarianInvitationResponse;
 import com.learnjava.libraraymanagementsystemv7.service.LibrarianInvitationService;
+
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,4 +32,13 @@ public class LibrarianInvitationController {
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
+    @PostMapping("/accept")
+    public ResponseEntity<String> acceptInvitation(
+            @Valid @RequestBody AcceptLibrarianInvitationRequest request) {
+
+        invitationService.acceptInvitation(request);
+
+        return ResponseEntity.ok("Librarian invitation accepted successfully");
+    }
+
 }
