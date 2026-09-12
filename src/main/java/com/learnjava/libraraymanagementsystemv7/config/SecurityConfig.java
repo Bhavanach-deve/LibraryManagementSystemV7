@@ -59,6 +59,26 @@ public class SecurityConfig
                         .requestMatchers(HttpMethod.GET, "/books")
                         .hasAnyRole("USER", "LIBRARIAN")
 
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/librarians",
+                                "/librarians/**"
+                        )
+                        .hasRole("ADMIN")
+
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/librarians/**"
+                        )
+                        .hasRole("ADMIN")
+
+                        .requestMatchers(
+                                HttpMethod.DELETE,
+                                "/librarians/**"
+                        )
+                        .hasRole("ADMIN")
+
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
