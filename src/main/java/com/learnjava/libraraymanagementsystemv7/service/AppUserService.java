@@ -40,6 +40,8 @@ public class AppUserService implements UserDetailsService {
                 .username(appUser.getEmail())
                 .password(appUser.getPassword())
                 .roles(appUser.getRole())
+                .accountLocked(false)
+                .disabled(!appUser.isEnabled())
                 .build();
     }
 
