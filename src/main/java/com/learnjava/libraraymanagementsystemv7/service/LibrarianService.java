@@ -6,6 +6,9 @@ import com.learnjava.libraraymanagementsystemv7.entity.Librarian;
 import com.learnjava.libraraymanagementsystemv7.exception.LibrarianNotFoundException;
 import com.learnjava.libraraymanagementsystemv7.repository.LibrarianRepository;
 import org.springframework.stereotype.Service;
+import com.learnjava.libraraymanagementsystemv7.entity.AppUser;
+import com.learnjava.libraraymanagementsystemv7.repository.AppUserRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +17,11 @@ import java.util.List;
 public class LibrarianService
 {
     private final LibrarianRepository librarianRepository;
+    private final AppUserRepository appUserRepository;
 
-    public LibrarianService(LibrarianRepository librarianRepository) {
+    public LibrarianService(LibrarianRepository librarianRepository,AppUserRepository appUserRepository) {
         this.librarianRepository = librarianRepository;
+        this.appUserRepository=appUserRepository;
     }
   
     public List<LibrarianResponse> getAllLibrarians() {
@@ -51,11 +56,21 @@ public class LibrarianService
 
         return toLibrarianResponse(updatedLibrarian);
     }
+    @Transactional
     public void deleteLibrarianById(int id)
     {
         Librarian librarian = findLibrarianById(id);
-        
-        librarianRepository.delete(librarian);
+
+        AppUser appUser = appUserRepository
+                .findByEmail(librarian.getEmail())
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "AppUser not found for librarian: "
+                                        + librarian.getEmail()));
+
+        appUser.setEnabled(false);
+
+        appUserRepository.save(appUser);
     }
     private LibrarianResponse toLibrarianResponse(Librarian librarian) {
 
