@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.learnjava.libraraymanagementsystemv7.entity.AppUser;
 import com.learnjava.libraraymanagementsystemv7.repository.AppUserRepository;
 import org.springframework.transaction.annotation.Transactional;
+import com.learnjava.libraraymanagementsystemv7.exception.AppUserNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +65,7 @@ public class LibrarianService
         AppUser appUser = appUserRepository
                 .findByEmail(librarian.getEmail())
                 .orElseThrow(() ->
-                        new RuntimeException(
+                        new AppUserNotFoundException(
                                 "AppUser not found for librarian: "
                                         + librarian.getEmail()));
 
