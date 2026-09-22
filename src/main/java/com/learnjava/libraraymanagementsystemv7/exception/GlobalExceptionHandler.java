@@ -73,5 +73,18 @@ public class GlobalExceptionHandler
 
         return response;
     }
+    @ExceptionHandler(AppUserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleAppUserNotFound(
+            AppUserNotFoundException exception) {
+
+        ErrorResponse response = new ErrorResponse();
+
+        response.setStatus(HttpStatus.NOT_FOUND.value());
+        response.setMessage(exception.getMessage());
+
+        return response;
+    }
+
 }
 
