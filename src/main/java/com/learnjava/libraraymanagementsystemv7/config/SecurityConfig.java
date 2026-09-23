@@ -52,13 +52,30 @@ public class SecurityConfig
                                 HttpMethod.POST,
                                 "/librarian-invitations/accept"
                         ).permitAll()
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/books",
+                                "/books/**"
+                        )
+                        .hasAnyRole("USER", "LIBRARIAN", "ADMIN")
 
-                        .requestMatchers(HttpMethod.POST, "/books")
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/books"
+                        )
                         .hasRole("LIBRARIAN")
 
-                        .requestMatchers(HttpMethod.GET, "/books")
-                        .hasAnyRole("USER", "LIBRARIAN")
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/books/**"
+                        )
+                        .hasRole("LIBRARIAN")
 
+                        .requestMatchers(
+                                HttpMethod.DELETE,
+                                "/books/**"
+                        )
+                        .hasRole("LIBRARIAN")
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/librarians",
