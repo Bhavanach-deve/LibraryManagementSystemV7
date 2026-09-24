@@ -94,8 +94,27 @@ public class SecurityConfig
                                 "/librarians/**"
                         )
                         .hasRole("ADMIN")
-
-
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/members"
+                        )
+                        .hasRole("LIBRARIAN")
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/members",
+                                "/members/**"
+                        )
+                        .hasRole("LIBRARIAN")
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/members/**"
+                        )
+                        .hasRole("LIBRARIAN")
+                        .requestMatchers(
+                                HttpMethod.DELETE,
+                                "/members/**"
+                        )
+                        .hasRole("LIBRARIAN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
