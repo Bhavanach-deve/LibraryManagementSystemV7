@@ -85,6 +85,30 @@ public class GlobalExceptionHandler
 
         return response;
     }
+    @ExceptionHandler(InvalidInvitationTokenException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleInvalidInvitationToken(
+            InvalidInvitationTokenException exception) {
+
+        ErrorResponse response = new ErrorResponse();
+
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setMessage(exception.getMessage());
+
+        return response;
+    }
+    @ExceptionHandler(InvitationExpiredException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleInvitationExpired(
+            InvitationExpiredException exception) {
+
+        ErrorResponse response = new ErrorResponse();
+
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setMessage(exception.getMessage());
+
+        return response;
+    }
 
 }
 

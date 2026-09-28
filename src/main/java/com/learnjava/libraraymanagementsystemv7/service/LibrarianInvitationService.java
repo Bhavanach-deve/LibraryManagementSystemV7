@@ -5,6 +5,8 @@ import com.learnjava.libraraymanagementsystemv7.dto.LibrarianInvitationRequest;
 import com.learnjava.libraraymanagementsystemv7.dto.LibrarianInvitationResponse;
 import com.learnjava.libraraymanagementsystemv7.entity.AppUser;
 import com.learnjava.libraraymanagementsystemv7.entity.LibrarianInvitation;
+import com.learnjava.libraraymanagementsystemv7.exception.InvalidInvitationTokenException;
+import com.learnjava.libraraymanagementsystemv7.exception.InvitationExpiredException;
 import com.learnjava.libraraymanagementsystemv7.repository.AppUserRepository;
 import com.learnjava.libraraymanagementsystemv7.repository.LibrarianInvitationRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -71,10 +73,10 @@ public class LibrarianInvitationService {
         LibrarianInvitation invitation =
                 invitationRepository.findByToken(request.getToken())
                         .orElseThrow(() ->
-                                new RuntimeException("Invalid invitation token"));
+                                new InvalidInvitationTokenException("Invalid invitation token"));
 
         if (invitation.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Invitation has expired");
+            throw new InvitationExpiredException("Invitation has expired");
         }
         if (invitation.isUsed()) {
             throw new RuntimeException("Invitation has already been used");
