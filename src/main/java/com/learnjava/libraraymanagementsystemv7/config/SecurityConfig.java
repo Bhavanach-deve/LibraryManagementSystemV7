@@ -14,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 @Configuration
 public class SecurityConfig
 {
@@ -41,6 +42,12 @@ public class SecurityConfig
 
         http
                 .csrf(csrf -> csrf.disable())
+
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(
+                                org.springframework.security.config.http.SessionCreationPolicy.STATELESS
+                        )
+                )
 
                 .authenticationProvider(authenticationProvider)
                 .authorizeHttpRequests(auth -> auth
