@@ -109,6 +109,18 @@ public class GlobalExceptionHandler
 
         return response;
     }
+    @ExceptionHandler(InvitationAlreadyUsedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleInvitationAlreadyUsed(
+            InvitationAlreadyUsedException exception) {
+
+        ErrorResponse response = new ErrorResponse();
+
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setMessage(exception.getMessage());
+
+        return response;
+    }
 
 }
 

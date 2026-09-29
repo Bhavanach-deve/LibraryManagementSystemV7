@@ -6,6 +6,7 @@ import com.learnjava.libraraymanagementsystemv7.dto.LibrarianInvitationResponse;
 import com.learnjava.libraraymanagementsystemv7.entity.AppUser;
 import com.learnjava.libraraymanagementsystemv7.entity.LibrarianInvitation;
 import com.learnjava.libraraymanagementsystemv7.exception.InvalidInvitationTokenException;
+import com.learnjava.libraraymanagementsystemv7.exception.InvitationAlreadyUsedException;
 import com.learnjava.libraraymanagementsystemv7.exception.InvitationExpiredException;
 import com.learnjava.libraraymanagementsystemv7.repository.AppUserRepository;
 import com.learnjava.libraraymanagementsystemv7.repository.LibrarianInvitationRepository;
@@ -79,7 +80,7 @@ public class LibrarianInvitationService {
             throw new InvitationExpiredException("Invitation has expired");
         }
         if (invitation.isUsed()) {
-            throw new RuntimeException("Invitation has already been used");
+            throw new InvitationAlreadyUsedException("Invitation has already been used");
         }
         AppUser appUser = new AppUser();
 
