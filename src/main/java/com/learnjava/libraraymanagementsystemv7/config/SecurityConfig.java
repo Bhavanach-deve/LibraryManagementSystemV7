@@ -122,6 +122,11 @@ public class SecurityConfig
                                 "/members/**"
                         )
                         .hasRole("LIBRARIAN")
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/book-copies"
+                        )
+                        .hasRole("LIBRARIAN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
