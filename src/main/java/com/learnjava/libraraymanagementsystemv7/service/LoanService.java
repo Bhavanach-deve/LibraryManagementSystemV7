@@ -1,5 +1,6 @@
 package com.learnjava.libraraymanagementsystemv7.service;
-
+import com.learnjava.libraraymanagementsystemv7.exception.LoanNotFoundException;
+import com.learnjava.libraraymanagementsystemv7.exception.LoanAlreadyReturnedException;
 import com.learnjava.libraraymanagementsystemv7.dto.BorrowRequest;
 import com.learnjava.libraraymanagementsystemv7.dto.LoanResponse;
 import com.learnjava.libraraymanagementsystemv7.entity.BookCopy;
@@ -12,8 +13,10 @@ import com.learnjava.libraraymanagementsystemv7.repository.LoanRepository;
 import com.learnjava.libraraymanagementsystemv7.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.learnjava.libraraymanagementsystemv7.exception.BookCopyNotFoundException;
+import com.learnjava.libraraymanagementsystemv7.exception.BookCopyNotAvailableException;
 import java.time.LocalDateTime;
+import com.learnjava.libraraymanagementsystemv7.exception.ActiveLoanAlreadyExistsException;
 
 @Service
 public class LoanService {
@@ -46,14 +49,14 @@ public class LoanService {
         BookCopy bookCopy = bookCopyRepository
                 .findById(request.getBookCopyId())
                 .orElseThrow(() ->
-                        new RuntimeException(
+                        new BookCopyNotFoundException(
                                 "BookCopy with id "
                                         + request.getBookCopyId()
                                         + " not found"
                         ));
 
         if (bookCopy.getStatus() != BookCopyStatus.AVAILABLE) {
-            throw new RuntimeException(
+            throw new BookCopyNotAvailableException(
                     "BookCopy with id "
                             + request.getBookCopyId()
                             + " is not available"
@@ -65,7 +68,7 @@ public class LoanService {
                 LoanStatus.ACTIVE
         ).isPresent()) {
 
-            throw new RuntimeException(
+            throw new ActiveLoanAlreadyExistsException(
                     "BookCopy with id "
                             + bookCopy.getId()
                             + " already has an active loan"
@@ -103,5 +106,30 @@ public class LoanService {
         response.setStatus(loan.getStatus().name());
 
         return response;
+    }
+    @Transactional
+    public LoanResponse returnBook(int loanId) {
+
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() ->
+                        new LoanNotFoundException(
+                                "Loan with id " + loanId + " not found"
+                        ));
+
+        if (loan.getStatus() == LoanStatus.RETURNED) {
+            throw new LoanAlreadyReturnedException(
+                    "Loan with id " + loanId + " has already been returned"
+            );
+        }
+
+        loan.setReturnedAt(LocalDateTime.now());
+        loan.setStatus(LoanStatus.RETURNED);
+
+        BookCopy bookCopy = loan.getBookCopy();
+        bookCopy.setStatus(BookCopyStatus.AVAILABLE);
+
+        Loan savedLoan = loanRepository.save(loan);
+
+        return toLoanResponse(savedLoan);
     }
 }

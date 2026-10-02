@@ -121,6 +121,67 @@ public class GlobalExceptionHandler
 
         return response;
     }
+    @ExceptionHandler(BookCopyNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleBookCopyNotFound(
+            BookCopyNotFoundException exception) {
+
+        ErrorResponse response = new ErrorResponse();
+
+        response.setStatus(HttpStatus.NOT_FOUND.value());
+        response.setMessage(exception.getMessage());
+
+        return response;
+    }
+    @ExceptionHandler(BookCopyNotAvailableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBookCopyNotAvailable(
+            BookCopyNotAvailableException exception) {
+
+        ErrorResponse response = new ErrorResponse();
+
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setMessage(exception.getMessage());
+
+        return response;
+    }
+    @ExceptionHandler(ActiveLoanAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleActiveLoanAlreadyExists(
+            ActiveLoanAlreadyExistsException exception) {
+
+        ErrorResponse response = new ErrorResponse();
+
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setMessage(exception.getMessage());
+
+        return response;
+    }
+    @ExceptionHandler(LoanNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleLoanNotFound(
+            LoanNotFoundException exception) {
+
+        ErrorResponse response = new ErrorResponse();
+
+        response.setStatus(HttpStatus.NOT_FOUND.value());
+        response.setMessage(exception.getMessage());
+
+        return response;
+    }
+
+    @ExceptionHandler(LoanAlreadyReturnedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleLoanAlreadyReturned(
+            LoanAlreadyReturnedException exception) {
+
+        ErrorResponse response = new ErrorResponse();
+
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setMessage(exception.getMessage());
+
+        return response;
+    }
 
 }
 
