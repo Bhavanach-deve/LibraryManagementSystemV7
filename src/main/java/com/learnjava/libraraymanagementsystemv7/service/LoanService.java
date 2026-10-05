@@ -1,6 +1,5 @@
 package com.learnjava.libraraymanagementsystemv7.service;
-import com.learnjava.libraraymanagementsystemv7.exception.LoanNotFoundException;
-import com.learnjava.libraraymanagementsystemv7.exception.LoanAlreadyReturnedException;
+import com.learnjava.libraraymanagementsystemv7.exception.*;
 import com.learnjava.libraraymanagementsystemv7.dto.BorrowRequest;
 import com.learnjava.libraraymanagementsystemv7.dto.LoanResponse;
 import com.learnjava.libraraymanagementsystemv7.entity.BookCopy;
@@ -13,10 +12,13 @@ import com.learnjava.libraraymanagementsystemv7.repository.LoanRepository;
 import com.learnjava.libraraymanagementsystemv7.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.learnjava.libraraymanagementsystemv7.exception.BookCopyNotFoundException;
-import com.learnjava.libraraymanagementsystemv7.exception.BookCopyNotAvailableException;
+
 import java.time.LocalDateTime;
-import com.learnjava.libraraymanagementsystemv7.exception.ActiveLoanAlreadyExistsException;
+
+import com.learnjava.libraraymanagementsystemv7.exception.LoanNotFoundException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class LoanService {
@@ -131,5 +133,61 @@ public class LoanService {
         Loan savedLoan = loanRepository.save(loan);
 
         return toLoanResponse(savedLoan);
+    }
+    public LoanResponse getLoanById(int loanId) {
+
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() ->
+                        new LoanNotFoundException(
+                                "Loan with id " + loanId + " not found"
+                        ));
+
+        return toLoanResponse(loan);
+    }
+    public List<LoanResponse> getLoansByMemberId(int memberId) {
+
+        memberRepository.findById(memberId)
+                .orElseThrow(() ->
+                        new MemberNotFoundException(
+                                "Member with id " + memberId + " not found"
+                        ));
+
+        List<Loan> loans = loanRepository.findByMemberId(memberId);
+
+        List<LoanResponse> responses = new ArrayList<>();
+
+        for (Loan loan : loans) {
+
+            LoanResponse response = toLoanResponse(loan);
+
+            responses.add(response);
+        }
+
+        return responses;
+    }
+    public List<LoanResponse> getActiveLoansByMemberId(int memberId) {
+
+        memberRepository.findById(memberId)
+                .orElseThrow(() ->
+                        new MemberNotFoundException(
+                                "Member with id " + memberId + " not found"
+                        ));
+
+        List<Loan> loans =
+                loanRepository.findByMemberIdAndStatus(
+                        memberId,
+                        LoanStatus.ACTIVE
+                );
+
+        List<LoanResponse> responses = new ArrayList<>();
+
+        for (Loan loan : loans) {
+
+            LoanResponse response = toLoanResponse(loan);
+
+            responses.add(response);
+        }
+
+        return responses;
     }
 }

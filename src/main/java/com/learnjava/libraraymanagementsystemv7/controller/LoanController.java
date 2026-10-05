@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/loans")
 public class LoanController {
@@ -38,5 +40,32 @@ public class LoanController {
                 loanService.returnBook(loanId);
 
         return ResponseEntity.ok(response);
+    }
+    @GetMapping("/{loanId}")
+    public ResponseEntity<LoanResponse> getLoanById(
+            @PathVariable int loanId) {
+
+        LoanResponse response =
+                loanService.getLoanById(loanId);
+
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/member/{memberId}")
+    public ResponseEntity<List<LoanResponse>> getLoansByMemberId(
+            @PathVariable int memberId) {
+
+        List<LoanResponse> responses =
+                loanService.getLoansByMemberId(memberId);
+
+        return ResponseEntity.ok(responses);
+    }
+    @GetMapping("/member/{memberId}/active")
+    public ResponseEntity<List<LoanResponse>> getActiveLoansByMemberId(
+            @PathVariable int memberId) {
+
+        List<LoanResponse> responses =
+                loanService.getActiveLoansByMemberId(memberId);
+
+        return ResponseEntity.ok(responses);
     }
 }

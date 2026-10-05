@@ -137,6 +137,11 @@ public class SecurityConfig
                                 "/loans/**"
                         )
                         .hasRole("LIBRARIAN")
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/loans/**"
+                        )
+                        .hasRole("LIBRARIAN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

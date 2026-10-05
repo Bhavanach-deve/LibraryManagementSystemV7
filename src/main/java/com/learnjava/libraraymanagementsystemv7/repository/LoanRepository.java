@@ -19,4 +19,6 @@ public interface LoanRepository
             int memberId,
             LoanStatus status
     );
+
+    List<Loan> findByMemberId(int memberId);
 }
