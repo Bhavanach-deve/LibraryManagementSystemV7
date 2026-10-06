@@ -190,4 +190,23 @@ public class LoanService {
 
         return responses;
     }
+    public List<LoanResponse> getOverdueLoans() {
+
+        List<Loan> loans =
+                loanRepository.findByStatusAndDueDateBefore(
+                        LoanStatus.ACTIVE,
+                        LocalDateTime.now()
+                );
+
+        List<LoanResponse> responses = new ArrayList<>();
+
+        for (Loan loan : loans) {
+
+            LoanResponse response = toLoanResponse(loan);
+
+            responses.add(response);
+        }
+
+        return responses;
+    }
 }

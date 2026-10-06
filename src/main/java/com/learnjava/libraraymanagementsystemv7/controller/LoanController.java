@@ -68,4 +68,12 @@ public class LoanController {
 
         return ResponseEntity.ok(responses);
     }
+    @GetMapping("/overdue")
+    public ResponseEntity<List<LoanResponse>> getOverdueLoans() {
+
+        List<LoanResponse> responses =
+                loanService.getOverdueLoans();
+
+        return ResponseEntity.ok(responses);
+    }
 }
