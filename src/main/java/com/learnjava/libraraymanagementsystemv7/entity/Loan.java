@@ -1,7 +1,7 @@
 package com.learnjava.libraraymanagementsystemv7.entity;
 
 import jakarta.persistence.*;
-
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,6 +27,16 @@ public class Loan {
 
     @Enumerated(EnumType.STRING)
     private LoanStatus status;
+
+    private BigDecimal lateFee;
+
+    public BigDecimal getLateFee() {
+        return lateFee;
+    }
+
+    public void setLateFee(BigDecimal lateFee) {
+        this.lateFee = lateFee;
+    }
 
     public Loan() {
     }

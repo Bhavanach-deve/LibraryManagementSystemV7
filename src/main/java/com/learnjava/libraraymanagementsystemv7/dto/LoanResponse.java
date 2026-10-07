@@ -1,5 +1,6 @@
 package com.learnjava.libraraymanagementsystemv7.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class LoanResponse {
@@ -11,6 +12,7 @@ public class LoanResponse {
     private LocalDateTime dueDate;
     private LocalDateTime returnedAt;
     private String status;
+    private BigDecimal lateFee;
 
     public int getId() {
         return id;
@@ -66,5 +68,13 @@ public class LoanResponse {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public BigDecimal getLateFee() {
+        return lateFee;
+    }
+
+    public void setLateFee(BigDecimal lateFee) {
+        this.lateFee = lateFee;
     }
 }

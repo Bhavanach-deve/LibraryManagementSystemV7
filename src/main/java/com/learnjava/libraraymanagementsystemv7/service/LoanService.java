@@ -7,16 +7,19 @@ import com.learnjava.libraraymanagementsystemv7.entity.BookCopyStatus;
 import com.learnjava.libraraymanagementsystemv7.entity.Loan;
 import com.learnjava.libraraymanagementsystemv7.entity.LoanStatus;
 import com.learnjava.libraraymanagementsystemv7.entity.Member;
+import com.learnjava.libraraymanagementsystemv7.policy.LateFeePolicy;
 import com.learnjava.libraraymanagementsystemv7.repository.BookCopyRepository;
 import com.learnjava.libraraymanagementsystemv7.repository.LoanRepository;
 import com.learnjava.libraraymanagementsystemv7.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.learnjava.libraraymanagementsystemv7.exception.LoanNotFoundException;
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,15 +29,18 @@ public class LoanService {
     private final LoanRepository loanRepository;
     private final MemberRepository memberRepository;
     private final BookCopyRepository bookCopyRepository;
+    private final LateFeePolicy lateFeePolicy;
 
     public LoanService(
             LoanRepository loanRepository,
             MemberRepository memberRepository,
-            BookCopyRepository bookCopyRepository) {
+            BookCopyRepository bookCopyRepository,
+            LateFeePolicy lateFeePolicy) {
 
         this.loanRepository = loanRepository;
         this.memberRepository = memberRepository;
         this.bookCopyRepository = bookCopyRepository;
+        this.lateFeePolicy = lateFeePolicy;
     }
 
     @Transactional
@@ -86,6 +92,7 @@ public class LoanService {
         loan.setBorrowedAt(borrowedAt);
         loan.setDueDate(borrowedAt.plusDays(14));
         loan.setReturnedAt(null);
+        loan.setLateFee(BigDecimal.ZERO);
         loan.setStatus(LoanStatus.ACTIVE);
 
         bookCopy.setStatus(BookCopyStatus.BORROWED);
@@ -106,6 +113,7 @@ public class LoanService {
         response.setDueDate(loan.getDueDate());
         response.setReturnedAt(loan.getReturnedAt());
         response.setStatus(loan.getStatus().name());
+        response.setLateFee(loan.getLateFee());
 
         return response;
     }
@@ -124,9 +132,32 @@ public class LoanService {
             );
         }
 
-        loan.setReturnedAt(LocalDateTime.now());
+        // Capture the exact return time once
+        LocalDateTime returnedAt = LocalDateTime.now();
+
+        // Calculate overdue days
+        long overdueDays = 0;
+
+        if (returnedAt.isAfter(loan.getDueDate())) {
+
+            overdueDays = ChronoUnit.DAYS.between(
+                    loan.getDueDate(),
+                    returnedAt
+            );
+        }
+
+        // Ask the policy to calculate the late fee
+        BigDecimal lateFee =
+                lateFeePolicy.calculateLateFee(overdueDays);
+
+        // Store the calculated fee in the loan
+        loan.setLateFee(lateFee);
+
+        // Mark the loan as returned
+        loan.setReturnedAt(returnedAt);
         loan.setStatus(LoanStatus.RETURNED);
 
+        // Make the physical book copy available again
         BookCopy bookCopy = loan.getBookCopy();
         bookCopy.setStatus(BookCopyStatus.AVAILABLE);
 
