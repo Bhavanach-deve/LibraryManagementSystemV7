@@ -182,6 +182,18 @@ public class GlobalExceptionHandler
 
         return response;
     }
+    @ExceptionHandler(MaximumActiveLoansExceededException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMaximumActiveLoansExceeded(
+            MaximumActiveLoansExceededException exception) {
+
+        ErrorResponse response = new ErrorResponse();
+
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setMessage(exception.getMessage());
+
+        return response;
+    }
 
 }
 

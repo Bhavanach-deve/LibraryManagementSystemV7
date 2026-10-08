@@ -26,10 +26,13 @@ import java.util.List;
 @Service
 public class LoanService {
 
+
     private final LoanRepository loanRepository;
     private final MemberRepository memberRepository;
     private final BookCopyRepository bookCopyRepository;
     private final LateFeePolicy lateFeePolicy;
+
+    private static final int MAX_ACTIVE_LOANS = 3;
 
     public LoanService(
             LoanRepository loanRepository,
@@ -53,6 +56,20 @@ public class LoanService {
                                         + request.getMemberId()
                                         + " not found"
                         ));
+        List<Loan> activeLoans =
+                loanRepository.findByMemberIdAndStatus(
+                        member.getId(),
+                        LoanStatus.ACTIVE
+                );
+
+        if (activeLoans.size() >= MAX_ACTIVE_LOANS) {
+            throw new  MaximumActiveLoansExceededException(
+                    "Member with id " + member.getId()
+                            + " already has the maximum of "
+                            + MAX_ACTIVE_LOANS
+                            + " active loans"
+            );
+        }
 
         BookCopy bookCopy = bookCopyRepository
                 .findById(request.getBookCopyId())
