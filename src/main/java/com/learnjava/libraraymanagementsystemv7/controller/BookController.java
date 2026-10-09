@@ -7,8 +7,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/books")
@@ -28,9 +28,10 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     @GetMapping
-    public ResponseEntity<List<BookResponse>> getAllBooks()
+    public ResponseEntity<Page<BookResponse>> getAllBooks(Pageable pageable)
     {
-        List<BookResponse>books=bookService.getAllBooks();
+        Page<BookResponse> books = bookService.getAllBooks(pageable);
+
         return ResponseEntity.ok(books);
     }
     @GetMapping("/{id}")

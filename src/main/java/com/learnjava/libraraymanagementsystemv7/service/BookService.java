@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 @Service
 public class BookService
 {
@@ -30,20 +31,11 @@ public class BookService
         Book savedBook = bookRepository.save(book);
         return toBookResponse(savedBook);
     }
+    public Page<BookResponse> getAllBooks(Pageable pageable) {
 
-    public List<BookResponse> getAllBooks(){
-        List<Book> books = bookRepository.findAll();
-        List<BookResponse> responses = new ArrayList<>();
+        Page<Book> bookPage = bookRepository.findAll(pageable);
 
-        for (Book book : books) {
-
-            BookResponse response = toBookResponse(book);
-
-            responses.add(response);
-        }
-
-        return responses;
-
+        return bookPage.map(this::toBookResponse);
     }
     public BookResponse getBookById(int id) {
 
