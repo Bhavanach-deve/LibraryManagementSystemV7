@@ -83,5 +83,15 @@ public class BookService
                 "Book with id " + id + " not found"
         );
     }
+    public Page<BookResponse> getBooksByAuthor(
+            String author,
+            Pageable pageable) {
+
+        Page<Book> bookPage =
+                bookRepository.findByAuthorIgnoreCase(author, pageable);
+
+        return bookPage.map(this::toBookResponse);
+    }
+
 }
 

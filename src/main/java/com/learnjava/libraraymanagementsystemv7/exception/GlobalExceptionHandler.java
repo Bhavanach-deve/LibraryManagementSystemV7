@@ -2,12 +2,13 @@ package com.learnjava.libraraymanagementsystemv7.exception;
 
 import com.learnjava.libraraymanagementsystemv7.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
+import jakarta.validation.ConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -182,6 +183,7 @@ public class GlobalExceptionHandler
 
         return response;
     }
+
     @ExceptionHandler(MaximumActiveLoansExceededException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMaximumActiveLoansExceeded(
@@ -191,6 +193,29 @@ public class GlobalExceptionHandler
 
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         response.setMessage(exception.getMessage());
+
+        return response;
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleConstraintViolation(
+            ConstraintViolationException exception) {
+
+        Map<String, String> errors = new HashMap<>();
+
+        exception.getConstraintViolations().forEach(violation -> {
+            String field = violation.getPropertyPath().toString();
+            String message = violation.getMessage();
+
+            errors.put(field, message);
+        });
+
+        ErrorResponse response = new ErrorResponse();
+
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setMessage("Validation failed");
+        response.setErrors(errors);
 
         return response;
     }

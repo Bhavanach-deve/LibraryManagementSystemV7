@@ -154,12 +154,12 @@ public class LoanService {
 
         // Calculate overdue days
         long overdueDays = 0;
-
-        if (returnedAt.isAfter(loan.getDueDate())) {
+        if (returnedAt.toLocalDate().isAfter(
+                loan.getDueDate().toLocalDate())) {
 
             overdueDays = ChronoUnit.DAYS.between(
-                    loan.getDueDate(),
-                    returnedAt
+                    loan.getDueDate().toLocalDate(),
+                    returnedAt.toLocalDate()
             );
         }
 
