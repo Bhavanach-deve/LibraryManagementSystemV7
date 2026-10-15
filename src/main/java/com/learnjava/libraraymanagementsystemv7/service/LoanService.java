@@ -63,7 +63,7 @@ public class LoanService {
                 );
 
         if (activeLoans.size() >= MAX_ACTIVE_LOANS) {
-            throw new  MaximumActiveLoansExceededException(
+            throw new MaximumActiveLoansExceededException(
                     "Member with id " + member.getId()
                             + " already has the maximum of "
                             + MAX_ACTIVE_LOANS
@@ -134,6 +134,7 @@ public class LoanService {
 
         return response;
     }
+
     @Transactional
     public LoanResponse returnBook(int loanId) {
 
@@ -182,6 +183,7 @@ public class LoanService {
 
         return toLoanResponse(savedLoan);
     }
+
     public LoanResponse getLoanById(int loanId) {
 
         Loan loan = loanRepository.findById(loanId)
@@ -192,6 +194,7 @@ public class LoanService {
 
         return toLoanResponse(loan);
     }
+
     public List<LoanResponse> getLoansByMemberId(int memberId) {
 
         memberRepository.findById(memberId)
@@ -213,6 +216,7 @@ public class LoanService {
 
         return responses;
     }
+
     public List<LoanResponse> getActiveLoansByMemberId(int memberId) {
 
         memberRepository.findById(memberId)
@@ -238,12 +242,15 @@ public class LoanService {
 
         return responses;
     }
+
     public List<LoanResponse> getOverdueLoans() {
+
+        LocalDateTime now = LocalDateTime.now();
 
         List<Loan> loans =
                 loanRepository.findByStatusAndDueDateBefore(
                         LoanStatus.ACTIVE,
-                        LocalDateTime.now()
+                        now
                 );
 
         List<LoanResponse> responses = new ArrayList<>();
@@ -251,6 +258,24 @@ public class LoanService {
         for (Loan loan : loans) {
 
             LoanResponse response = toLoanResponse(loan);
+
+            // Calculate overdue calendar days
+            long overdueDays = 0;
+
+            if (now.toLocalDate().isAfter(
+                    loan.getDueDate().toLocalDate())) {
+
+                overdueDays = ChronoUnit.DAYS.between(
+                        loan.getDueDate().toLocalDate(),
+                        now.toLocalDate()
+                );
+            }
+
+            // Calculate the current estimated fine
+            BigDecimal estimatedFine =
+                    lateFeePolicy.calculateLateFee(overdueDays);
+
+            response.setLateFee(estimatedFine);
 
             responses.add(response);
         }
