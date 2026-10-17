@@ -76,4 +76,15 @@ public class LoanController {
 
         return ResponseEntity.ok(responses);
     }
+
+    @GetMapping("/book-copy/{bookCopyId}/active")
+    public ResponseEntity<LoanResponse> getActiveLoanByBookCopyId(
+            @PathVariable int bookCopyId) {
+
+        LoanResponse response =
+                loanService.getActiveLoanByBookCopyId(bookCopyId);
+
+        return ResponseEntity.ok(response);
+    }
+
 }

@@ -135,6 +135,32 @@ public class LoanService {
         return response;
     }
 
+    private BigDecimal calculateCurrentFine(
+            Loan loan, LocalDateTime now) {
+
+        // Returned loans keep their saved final fine
+        if (loan.getStatus() == LoanStatus.RETURNED) {
+            return loan.getLateFee() != null
+                    ? loan.getLateFee()
+                    : BigDecimal.ZERO;
+        }
+
+        // No fine until the calendar day after the due date
+        if (loan.getDueDate() == null
+                || !now.toLocalDate().isAfter(
+                loan.getDueDate().toLocalDate())) {
+            return BigDecimal.ZERO;
+        }
+
+        long overdueDays = ChronoUnit.DAYS.between(
+                loan.getDueDate().toLocalDate(),
+                now.toLocalDate()
+        );
+
+        return lateFeePolicy.calculateLateFee(overdueDays);
+    }
+
+
     @Transactional
     public LoanResponse returnBook(int loanId) {
 
@@ -233,9 +259,26 @@ public class LoanService {
 
         List<LoanResponse> responses = new ArrayList<>();
 
-        for (Loan loan : loans) {
+        LocalDateTime now = LocalDateTime.now();
 
+        for (Loan loan : loans) {
             LoanResponse response = toLoanResponse(loan);
+
+            long overdueDays = 0;
+
+            if (now.toLocalDate().isAfter(
+                    loan.getDueDate().toLocalDate())) {
+
+                overdueDays = ChronoUnit.DAYS.between(
+                        loan.getDueDate().toLocalDate(),
+                        now.toLocalDate()
+                );
+            }
+
+            BigDecimal estimatedFine =
+                    lateFeePolicy.calculateLateFee(overdueDays);
+
+            response.setLateFee(estimatedFine);
 
             responses.add(response);
         }
@@ -282,4 +325,35 @@ public class LoanService {
 
         return responses;
     }
+
+    public LoanResponse getActiveLoanByBookCopyId(int bookCopyId) {
+
+        // Verify that this physical book copy exists
+        bookCopyRepository.findById(bookCopyId)
+                .orElseThrow(() ->
+                        new BookCopyNotFoundException(
+                                "BookCopy with id " + bookCopyId
+                                        + " not found"
+                        ));
+
+        // Find the current active loan for this copy
+        Loan loan = loanRepository
+                .findByBookCopyIdAndStatus(
+                        bookCopyId,
+                        LoanStatus.ACTIVE
+                )
+                .orElseThrow(() ->
+                        new LoanNotFoundException(
+                                "No active loan found for book copy id "
+                                        + bookCopyId
+                        ));
+
+        LocalDateTime now = LocalDateTime.now();
+
+        LoanResponse response = toLoanResponse(loan);
+        response.setLateFee(calculateCurrentFine(loan, now));
+
+        return response;
+    }
+
 }
