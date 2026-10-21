@@ -72,7 +72,7 @@ public class LoanService {
         }
 
         BookCopy bookCopy = bookCopyRepository
-                .findById(request.getBookCopyId())
+                .findByIdForUpdate(request.getBookCopyId())
                 .orElseThrow(() ->
                         new BookCopyNotFoundException(
                                 "BookCopy with id "
