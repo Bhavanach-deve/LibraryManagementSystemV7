@@ -50,24 +50,16 @@ public class LoanService {
     public LoanResponse borrowBook(BorrowRequest request) {
 
         Member member = memberRepository.findById(request.getMemberId())
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Member with id "
-                                        + request.getMemberId()
-                                        + " not found"
-                        ));
-        List<Loan> activeLoans =
-                loanRepository.findByMemberIdAndStatus(
-                        member.getId(),
+                .orElseThrow(() -> new MemberNotFoundException("Member with id " + request.getMemberId() + " not found"));
+        long activeLoanCount =
+                loanRepository.countByMemberIdAndStatus(
+                        request.getMemberId(),
                         LoanStatus.ACTIVE
                 );
 
-        if (activeLoans.size() >= MAX_ACTIVE_LOANS) {
-            throw new MaximumActiveLoansExceededException(
-                    "Member with id " + member.getId()
-                            + " already has the maximum of "
-                            + MAX_ACTIVE_LOANS
-                            + " active loans"
+        if (activeLoanCount >= 3) {
+            throw new IllegalStateException(
+                    "Member has reached the maximum active loan limit"
             );
         }
 
@@ -125,7 +117,14 @@ public class LoanService {
 
         response.setId(loan.getId());
         response.setMemberId(loan.getMember().getId());
+        response.setMemberName(loan.getMember().getName());
         response.setBookCopyId(loan.getBookCopy().getId());
+        response.setBookTitle(
+                loan.getBookCopy().getBook().getTitle()
+        );
+        response.setCopyNumber(
+                loan.getBookCopy().getCopyNumber()
+        );
         response.setBorrowedAt(loan.getBorrowedAt());
         response.setDueDate(loan.getDueDate());
         response.setReturnedAt(loan.getReturnedAt());

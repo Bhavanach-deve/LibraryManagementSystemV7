@@ -8,6 +8,9 @@ public class LoanResponse {
     private int id;
     private int memberId;
     private int bookCopyId;
+    private String memberName;
+    private String bookTitle;
+    private int copyNumber;
     private LocalDateTime borrowedAt;
     private LocalDateTime dueDate;
     private LocalDateTime returnedAt;
@@ -76,5 +79,28 @@ public class LoanResponse {
 
     public void setLateFee(BigDecimal lateFee) {
         this.lateFee = lateFee;
+    }
+    public String getMemberName() {
+        return memberName;
+    }
+
+    public void setMemberName(String memberName) {
+        this.memberName = memberName;
+    }
+
+    public String getBookTitle() {
+        return bookTitle;
+    }
+
+    public void setBookTitle(String bookTitle) {
+        this.bookTitle = bookTitle;
+    }
+
+    public int getCopyNumber() {
+        return copyNumber;
+    }
+
+    public void setCopyNumber(int copyNumber) {
+        this.copyNumber = copyNumber;
     }
 }

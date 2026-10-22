@@ -29,4 +29,8 @@ public interface LoanRepository
             LoanStatus status,
             LocalDateTime dateTime
     );
+    long countByMemberIdAndStatus(
+            int memberId,
+            LoanStatus status
+    );
 }
